@@ -23,10 +23,7 @@ def evaluate_production_function(n, prior, sigma, num_mc = 100_000):
 
 ######### Gaussian Case ###############
 
-
-
-
-def production_function(n, tau, mu, sigma):
+def gaussian_production_function(n, tau, mu, sigma):
   def mvar(n):
     return tau**2 + sigma**2/n
 

@@ -6,7 +6,6 @@ import numpy as np
 #################################################################
 
 
-
 # this is an approximation: assume that the smallest unit of allocation is N_step.
 def metaproduction_DP_small_I(N,I, N_step, production_function):
     N_range = np.arange(0,N,N_step)
@@ -14,7 +13,6 @@ def metaproduction_DP_small_I(N,I, N_step, production_function):
 
 
     opt_vals = np.zeros((len(I_range), len(N_range)))
-    #opt_vals[:,0] = production_function(N_step) + (I_range-1)*mu_p 
     opt_vals[:,0] = 0 # base case: N = 0
     opt_vals[0,:] = production_function(N_range) # base case: I = 1
 
@@ -24,8 +22,7 @@ def metaproduction_DP_small_I(N,I, N_step, production_function):
 
     ## DP iteration
     for i in range(1,len(I_range)):
-        for n in range(1,len(N_range)):       
-            #vals = opt_vals[i-1,n-np.arange(n+1)] + production_function(np.arange(n+1))
+        for n in range(1,len(N_range)):
             vals = opt_vals[i-1,n-np.arange(n+1)] + opt_vals[0,np.arange(n+1)]
             opt_vals[i,n] = np.max(vals)
             allocation[i,n] = np.argmax(vals)*N_step
@@ -43,28 +40,30 @@ def metaproduction_DP_small_I(N,I, N_step, production_function):
     return opt_vals, allocation, opt_alloc
 
 
+
+# this is an approximation: assume that the smallest unit of allocation is N_step, and chunks of ideas are allocated at once.
 def optimal_production_DP(N,I, N_step, I_step, production_function):
     N_range = np.arange(1,N, N_step)
     I_range = np.arange(1,I, I_step)
 
 
-    helper_vals = np.zeros((I_step, len(N_range)))
+    helper_vals = np.zeros((I_step+1, len(N_range)))
     one_test_values = production_function(np.arange(0,N,N_step))
 
-    ## DP base case: N = 1.
-    helper_vals[:,0] = production_function(1) + np.arange(1,I_step+1)*max(mu,0)
+    ## DP base case: N = 0.
+    helper_vals[:,0] = 0
     
-    ## DP base case: I = 1.
-    helper_vals[0,:] = production_function(N_range)
+    ## DP base case: I = 0.
+    helper_vals[0,:] = 0
 
     ## Precompute up to I_step 
     for i in range(1,I_step+1):
         for n in range(1,len(N_range)):       
-            helper_vals[i-1,n] = np.max(helper_vals[i-2,n-np.arange(n+1)] + one_test_values[np.arange(n+1)]) 
+            helper_vals[i,n] = np.max(helper_vals[i-1,n-np.arange(n+1)] + one_test_values[np.arange(n+1)]) 
 
 
     opt_vals = np.zeros((len(I_range), len(N_range)))
-    opt_vals[:,0] = production_function(1) + (I_range-1)*max(mu,0)
+    opt_vals[:,0] = 0 #base case, N = 0
     opt_vals[0,:] = production_function(N_range)
 
     ## DP iteration
@@ -73,10 +72,6 @@ def optimal_production_DP(N,I, N_step, I_step, production_function):
             opt_vals[i,n] = np.max(opt_vals[i-1,n-np.arange(n+1)] + helper_vals[-1,np.arange(n+1)]) 
 
     return opt_vals
-
-
-
-
 
 
 #################################################################

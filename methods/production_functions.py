@@ -24,8 +24,10 @@ def evaluate_production_function(n, prior, sigma, num_mc = 100_000):
 ######### Gaussian Case ###############
 
 
-def mvar(n):
-  return tau**2 + sigma**2/n
 
-def production_function(n):
-  return tau**2/(np.sqrt(2*np.pi*mvar(n))) * np.exp(-mu**2 * mvar(n)/(2* tau**4)) + mu*norm.cdf(mu*np.sqrt(mvar(n))/tau**2) - mu_p
+
+def production_function(n, tau, mu, sigma):
+  def mvar(n):
+    return tau**2 + sigma**2/n
+
+  return tau**2/(np.sqrt(2*np.pi*mvar(n))) * np.exp(-mu**2 * mvar(n)/(2* tau**4)) + mu*stats.norm.cdf(mu*np.sqrt(mvar(n))/tau**2) - np.max(mu,0)

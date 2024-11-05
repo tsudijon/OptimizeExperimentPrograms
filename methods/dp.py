@@ -8,7 +8,7 @@ import numpy as np
 
 
 # this is an approximation: assume that the smallest unit of allocation is N_step.
-def metaproduction_DP_small_I(N,I, N_step):
+def metaproduction_DP_small_I(N,I, N_step, production_function):
     N_range = np.arange(0,N,N_step)
     I_range = np.arange(1,I+1,1)
 
@@ -43,7 +43,7 @@ def metaproduction_DP_small_I(N,I, N_step):
     return opt_vals, allocation, opt_alloc
 
 
-def optimal_production_DP(N,I, N_step, I_step):
+def optimal_production_DP(N,I, N_step, I_step, production_function):
     N_range = np.arange(1,N, N_step)
     I_range = np.arange(1,I, I_step)
 
@@ -52,7 +52,7 @@ def optimal_production_DP(N,I, N_step, I_step):
     one_test_values = production_function(np.arange(0,N,N_step))
 
     ## DP base case: N = 1.
-    helper_vals[:,0] = production_function(1) + np.arange(1,I_step+1)*mu_p
+    helper_vals[:,0] = production_function(1) + np.arange(1,I_step+1)*max(mu,0)
     
     ## DP base case: I = 1.
     helper_vals[0,:] = production_function(N_range)
@@ -64,7 +64,7 @@ def optimal_production_DP(N,I, N_step, I_step):
 
 
     opt_vals = np.zeros((len(I_range), len(N_range)))
-    opt_vals[:,0] = production_function(1) + (I_range-1)*mu_p
+    opt_vals[:,0] = production_function(1) + (I_range-1)*max(mu,0)
     opt_vals[0,:] = production_function(N_range)
 
     ## DP iteration

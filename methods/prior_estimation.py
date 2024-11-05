@@ -34,3 +34,15 @@ def empirical_bayes_normal(estimates, standard_errors):
     alpha = tau**2 / (tau**2 + standard_errors**2)
     eb_estimates = alpha * estimates + (1 - alpha) * mu
     return eb_estimates, mu, tau
+
+def empirical_bayes_npmle(estimates, standard_errors):
+    m = GLMixture(prec_type='diagonal')
+ 
+    ## Compute the NPMLE 
+    m.fit(X = estimates,
+        prec = 1./standard_errors**2)
+
+    eb_estimates = m.posterior_mean(estimates, 1./standard_errors**2)
+
+    return eb_estimates, m
+
